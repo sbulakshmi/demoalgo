@@ -62,8 +62,8 @@ WriteLine(Join(" , ", (lookupDictionary.Keys.Select(p => $"{p}"))));
 
 Console.WriteLine();
 Console.WriteLine("Enter the From Node Name");
-string fromNodeName = "a";
-//string fromNodeName = Console.ReadLine();
+//string fromNodeName = "a";
+string fromNodeName = Console.ReadLine();
 if (!lookupDictionary.ContainsKey(fromNodeName))
 {
     Console.WriteLine();
@@ -73,8 +73,8 @@ if (!lookupDictionary.ContainsKey(fromNodeName))
 
 Console.WriteLine();
 Console.WriteLine("Enter the To Node Name");
-string toNodeName = "d";
-//string toNodeName = Console.ReadLine();
+//string toNodeName = "d";
+string toNodeName = Console.ReadLine();
 if (!lookupDictionary.ContainsKey(toNodeName))
 {
     Console.WriteLine();
@@ -88,7 +88,7 @@ ShortestPathData result = ShortestPath(fromNodeName, toNodeName, graph);
 Console.WriteLine();
 Console.WriteLine("*********Suggested Path*********");
 //WriteLine(Join(" , ", result.NodeNames.Select(p => $"{p}").Reverse()));
-WriteLine(Join(" , ", result.NodeNames.Select(p => $"{p}")));
+WriteLine(Join(", ", result.NodeNames.Select(p => $"{p}")));
 Console.WriteLine();
 Console.WriteLine("*********Distance covered by path*********");
 WriteLine(result.Distance);
@@ -97,25 +97,14 @@ ShortestPathData ShortestPath(string fromNodeName, string toNodeName, Graph grap
 {
     ShortestPathData result = new ShortestPathData();
     var path = graph.FindPath(id(fromNodeName));
-    // result.NodeNames.AddRange(Path(id(fromNodeName), id(toNodeName)).Select(p => ((name(p.node)))));
-    // result.Distance = path[id(toNodeName)].distance;
-
-    TraversePath(id(fromNodeName), id(toNodeName), id(fromNodeName), id(toNodeName));
+    TraverseAndGeneratePath(id(fromNodeName), id(toNodeName), id(fromNodeName), id(toNodeName));
     result.Distance = path[id(toNodeName)].distance;
     return result;
 
-    // IEnumerable<(double distance, int node)> Path(int start, int destination)
-    // {
-    //     yield return (path[destination].distance, destination);
-    //     for (int i = destination; i != start; i = path[i].prev)
-    //     {
-    //         yield return (path[path[i].prev].distance, path[i].prev);
-    //     }
-    // }
-    void TraversePath(int start, int destination, int orgStart, int orgDestination)
+    void TraverseAndGeneratePath(int start, int destination, int orgStart, int orgDestination)
     {
         if (start != destination)
-            TraversePath(start, path[destination].prev, orgStart, orgDestination);
+            TraverseAndGeneratePath(start, path[destination].prev, orgStart, orgDestination);
         if (destination != orgStart)
             result.NodeNames.Add(name(path[destination].prev));
         if (destination == orgDestination)
