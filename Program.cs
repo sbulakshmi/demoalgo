@@ -63,7 +63,7 @@ WriteLine(Join(" , ", (lookupDictionary.Keys.Select(p => $"{p}"))));
 Console.WriteLine();
 Console.WriteLine("Enter the From Node Name");
 //string fromNodeName = "a";
-string fromNodeName = Console.ReadLine();
+string fromNodeName = Console.ReadLine() ?? string.Empty; ;
 if (!lookupDictionary.ContainsKey(fromNodeName))
 {
     Console.WriteLine();
@@ -74,7 +74,7 @@ if (!lookupDictionary.ContainsKey(fromNodeName))
 Console.WriteLine();
 Console.WriteLine("Enter the To Node Name");
 //string toNodeName = "d";
-string toNodeName = Console.ReadLine();
+string toNodeName = Console.ReadLine() ?? string.Empty; ;
 if (!lookupDictionary.ContainsKey(toNodeName))
 {
     Console.WriteLine();

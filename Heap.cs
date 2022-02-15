@@ -1,9 +1,9 @@
 sealed class Heap<T>
 {
     private readonly IComparer<T> comparer;
-    private readonly List<T> list = new List<T> { default };
+    private readonly List<T> list = new List<T> { default! };
 
-    public Heap() : this(default(IComparer<T>)) { }
+    public Heap() : this(default(IComparer<T>)!) { }
 
     public Heap(IComparer<T> comparer)
     {
