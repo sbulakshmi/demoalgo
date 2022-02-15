@@ -2,20 +2,15 @@
 using static System.String;
 using static System.Console;
 using System.Collections;
-// See https://aka.ms/new-console-template for more information
-// https://rosettacode.org/wiki/Dijkstra%27s_algorithm#C.23
-Graph graph = new Graph(9);
-var lookupDictionary = new Dictionary<string, int>();
-Hashtable lookupHash = new Hashtable();
 
-// Func<char, int> id = c => c - 'a';
-// Func<int, char> name = i => (char)(i + 'a');
+
+var lookupDictionary = new Dictionary<string, int>();
+Func<string, int> id = AddKeyAndGetIntCode;
+Func<int, string> name = GetNameForIntCode;
 
 int AddKeyAndGetIntCode(string name)
 {
-    // int hCode = lookupHash.Count;//lookupDictionary.Count();// name.GetHashCode();
-    // lookupHash.ContainsKey(name)?(hCode =lookupHash.g):(lookupHash.Add(hCode, name));
-    int hCode = lookupDictionary.Count();// name.GetHashCode();
+    int hCode = lookupDictionary.Count();
     if (lookupDictionary.ContainsKey(name))
     {
         hCode = lookupDictionary[name];
@@ -24,24 +19,17 @@ int AddKeyAndGetIntCode(string name)
     {
         lookupDictionary.Add(name, hCode);
     }
-
     return hCode;
-    //return (name[0] - 'a');
-    // return name[0] + 'a';
 }
 
 string GetNameForIntCode(int id)
 {
     return lookupDictionary.FirstOrDefault(x => x.Value == id).Key;
-    //return ((char)(id + 'a')).ToString();
-    //return (id - 'a').ToString();
 }
 
-Func<string, int> id = AddKeyAndGetIntCode;
-Func<int, string> name = GetNameForIntCode;
-//TODO: debug the flow
-//TODO: Add directed edges, undirected edges
-foreach (var (start, end, cost) in new[] {
+//Initialise the graph
+Graph graph = new Graph(9);
+foreach (var (start, end, weight) in new[] {
             ("a", "b", 4),
             ("b", "a", 4),
             ("a", "c", 6),
@@ -67,17 +55,15 @@ foreach (var (start, end, cost) in new[] {
             ("g", "h", 5),
         })
 {
-    graph.AddEdge(id(start), id(end), cost);
+    graph.AddEdge(id(start), id(end), weight);
 }
-
-//TODO: Display the matrix and get the start, destination
 Console.WriteLine("********Available Node Names********");
 WriteLine(Join(" , ", (lookupDictionary.Keys.Select(p => $"{p}"))));
 
 Console.WriteLine();
 Console.WriteLine("Enter the From Node Name");
-//string fromNodeName = "a";
-string fromNodeName = Console.ReadLine();
+string fromNodeName = "a";
+//string fromNodeName = Console.ReadLine();
 if (!lookupDictionary.ContainsKey(fromNodeName))
 {
     Console.WriteLine();
@@ -87,45 +73,52 @@ if (!lookupDictionary.ContainsKey(fromNodeName))
 
 Console.WriteLine();
 Console.WriteLine("Enter the To Node Name");
-string toNodeName = Console.ReadLine();
+string toNodeName = "d";
+//string toNodeName = Console.ReadLine();
 if (!lookupDictionary.ContainsKey(toNodeName))
 {
     Console.WriteLine();
     Console.WriteLine("Invalid To Node Name");
     return;
 }
-//string toNodeName = "i";//Console.ReadKey().KeyChar;
-//char t = Console.ReadKey().KeyChar;
 Console.WriteLine();
-//TODO: check if valid char is entered
 
-// var path = graph.FindPath(id("a"));
-var path = graph.FindPath(id(fromNodeName));
-//TODO: Display the path for the destination
+ShortestPathData result = ShortestPath(fromNodeName, toNodeName, graph);
 
-WriteLine(Join(" , ", Path(id(fromNodeName), id(toNodeName)).Select(p => $"{name(p.node)}({p.distance})").Reverse()));
-//TODO: Input, output as per use case description
-//TODO: Parallel operations
-//TODO: Stack to pop?
-//TODO: why custom heap class?
-//TODO: Unit test cases
-//TODO: SOLID
-IEnumerable<(double distance, int node)> Path(int start, int destination)
+Console.WriteLine();
+Console.WriteLine("*********Suggested Path*********");
+//WriteLine(Join(" , ", result.NodeNames.Select(p => $"{p}").Reverse()));
+WriteLine(Join(" , ", result.NodeNames.Select(p => $"{p}")));
+Console.WriteLine();
+Console.WriteLine("*********Distance covered by path*********");
+WriteLine(result.Distance);
+
+ShortestPathData ShortestPath(string fromNodeName, string toNodeName, Graph graphNode)
 {
-    yield return (path[destination].distance, destination);
-    for (int i = destination; i != start; i = path[i].prev)
+    ShortestPathData result = new ShortestPathData();
+    var path = graph.FindPath(id(fromNodeName));
+    // result.NodeNames.AddRange(Path(id(fromNodeName), id(toNodeName)).Select(p => ((name(p.node)))));
+    // result.Distance = path[id(toNodeName)].distance;
+
+    TraversePath(id(fromNodeName), id(toNodeName), id(fromNodeName), id(toNodeName));
+    result.Distance = path[id(toNodeName)].distance;
+    return result;
+
+    // IEnumerable<(double distance, int node)> Path(int start, int destination)
+    // {
+    //     yield return (path[destination].distance, destination);
+    //     for (int i = destination; i != start; i = path[i].prev)
+    //     {
+    //         yield return (path[path[i].prev].distance, path[i].prev);
+    //     }
+    // }
+    void TraversePath(int start, int destination, int orgStart, int orgDestination)
     {
-        yield return (path[path[i].prev].distance, path[i].prev);
+        if (start != destination)
+            TraversePath(start, path[destination].prev, orgStart, orgDestination);
+        if (destination != orgStart)
+            result.NodeNames.Add(name(path[destination].prev));
+        if (destination == orgDestination)
+            result.NodeNames.Add(name(destination));
     }
 }
-
-// ShortestPathData ShortestPath(string fromNodeName, string toNodeName, List<Nodes> graphNode)
-// {
-
-// }
-
-// class ShortestPathData
-// {
-//     List<string> NodeNames { get; set; }
-//     int Distance { get; }
-// }
